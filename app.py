@@ -9,7 +9,7 @@ from pyspark.ml.feature import VectorAssembler
 app = Flask(__name__)
 
 @app.route('/')
-def login():
+def index():
     return render_template('index.html')
 
 @app.route('/predict', methods=['POST'])
