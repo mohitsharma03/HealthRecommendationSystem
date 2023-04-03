@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Predict Heart Disease</title>
+	<link rel="stylesheet" type="text/css" href="/static/singleUserHeart.css">
+</head>
+<body>
+	<h1>Predict Heart Disease</h1>
+	<form action="/predictPerUserHeart" method="POST">
+		<label for="age">Age:</label>
+		<input type="number" name="age"><br><br>
+
+		<label for="sex">Sex (0 = female, 1 = male):</label>
+		<input type="number" name="sex"><br><br>
+
+		<label for="cp">Chest Pain Type (1-4):</label>
+		<input type="number" name="cp"><br><br>
+
+		<label for="trestbps">Resting Blood Pressure:</label>
+		<input type="number" name="trestbps"><br><br>
+
+		<label for="chol">Cholesterol:</label>
+		<input type="number" name="chol"><br><br>
+
+		<label for="fbs">Fasting Blood Sugar (0 = <= 120 mg/dl, 1 = > 120 mg/dl):</label>
+		<input type="number" name="fbs"><br><br>
+
+		<label for="restecg">Resting ECG Results (0-2):</label>
+		<input type="number" name="restecg"><br><br>
+
+		<label for="thalach">Max Heart Rate Achieved:</label>
+		<input type="number" name="thalach"><br><br>
+
+		<label for="exang">Exercise Induced Angina (0 = no, 1 = yes):</label>
+		<input type="number" name="exang"><br><br>
+
+		<label for="oldpeak">ST Depression:</label>
+		<input type="number" step="0.1" name="oldpeak"><br><br>
+
+		<label for="slope">Slope of Peak Exercise ST Segment (1-3):</label>
+		<input type="number" name="slope"><br><br>
+
+		<label for="ca">Number of Major Vessels:</label>
+		<input type="number" name="ca"><br><br>
+
+		<label for="thal">Thalassemia (1-3):</label>
+		<input type="number" name="thal"><br><br>
+
+		<div class="center">
+			<input type="submit" value="Submit">
+		</div>
+	</form>
+</body>
+</html>

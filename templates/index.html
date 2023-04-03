@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Upload a file</title>
+	<title>Disease Prediction</title>
+    <link rel="stylesheet" type="text/css" href="/static/index.css">
 </head>
 <body>
-  <h1>Upload a file</h1>
-  <form action="/predict" method="post" enctype="multipart/form-data">
-    <input type="file" name="file"><br><br>
-    <input type="submit" value="Upload">
-  </form>
+	<h1>Choose a Disease</h1>
+	<form method="POST" action="/chose">
+		<label for="disease">Select a disease:</label>
+		<select name="disease" id="disease">
+			<option value="diabetes">Diabetes</option>
+			<option value="heart_disease">Heart Disease</option>
+		</select>
+		<br><br>
+		<h1>Action Selection</h1>
+		<label for="action">Select an action:</label>
+		<select name="action" id="action">
+			<option value="train">Train Model</option>
+			<option value="single">Predict Single User</option>
+		</select><br><br>
+		<div class="center">
+            <input type="submit" value="Submit">
+        </div>
+	</form>
 </body>
 </html>

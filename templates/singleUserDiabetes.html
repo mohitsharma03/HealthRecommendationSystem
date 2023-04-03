@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Diabetes Prediction</title>
+	<link rel="stylesheet" type="text/css" href="/static/singleUserDiabetes.css">
+</head>
+<body>
+	<h1>Enter Patient Details</h1>
+	<form method="POST" action="/predictPerUserDiabetes">
+		<label for="pregnancies">Number of Pregnancies:</label>
+		<input type="text" name="pregnancies"><br><br>
+
+		<label for="glucose">Glucose:</label>
+		<input type="text" name="glucose"><br><br>
+
+		<label for="blood_pressure">Blood Pressure:</label>
+		<input type="text" name="blood_pressure"><br><br>
+
+		<label for="skin_thickness">Skin Thickness:</label>
+		<input type="text" name="skin_thickness"><br><br>
+
+		<label for="insulin">Insulin:</label>
+		<input type="text" name="insulin"><br><br>
+
+		<label for="bmi">BMI:</label>
+		<input type="text" name="bmi"><br><br>
+
+		<label for="dpf">DPF:</label>
+		<input type="text" name="dpf"><br><br>
+
+		<label for="age">Age:</label>
+		<input type="text" name="age"><br><br>
+		<div class="center">
+			<input type="submit" value="Submit">
+		</div>
+	</form>
+</body>
+</html>
