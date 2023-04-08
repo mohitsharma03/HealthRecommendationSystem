@@ -1,11 +1,13 @@
 from io import StringIO
-import tempfile, csv, os
+import tempfile, csv, os, math
 from flask import Flask, jsonify, render_template, request, Response, redirect, make_response, url_for
 from pyspark.sql import SparkSession, Row, functions
 from pyspark.sql.types import StructType, StructField, IntegerType, DoubleType
 from pyspark.sql.functions import col
 from pyspark.ml.regression import DecisionTreeRegressor, DecisionTreeRegressionModel
+from pyspark.ml.classification import DecisionTreeClassifier, DecisionTreeClassificationModel
 from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 
 app = Flask(__name__)
 
@@ -84,11 +86,13 @@ def predictPerUserDiabetes():
         testDF = assembler.transform(input_df).select("diabetes", "features")
 
         #Load the Decision Tree model
-        model = DecisionTreeRegressionModel.load("diabetes_model")
+        #model = DecisionTreeRegressionModel.load("diabetes_model")
+        model = DecisionTreeClassificationModel.load("diabetes_model")
 
         # Predict on test data
         fullPredictions = model.transform(testDF).cache()
         predictions = fullPredictions.select("prediction").rdd.map(lambda x: x[0])
+        predictions = predictions.map(float).map(round)#for rounding off values
         labels = fullPredictions.select("diabetes").rdd.map(lambda x: x[0])
         predictionAndLabel = predictions.zip(labels).collect()
 
@@ -104,9 +108,18 @@ def predictPerUserDiabetes():
 
         # Stop the SparkSession
         spark.stop()
+        
+        # Set message based on the rounded value of predictions
+        message = "person is not diabetic"
+        val='0'
+        if predictions == 1:
+            message = "person is diabetic"
+            val='1'
 
-        # Render the predictions in an HTML table
-        return render_template('predictions.html', data=data)
+        # Render the predictions and message in an HTML table
+        return render_template('message.html',message=message, val=val)
+        #return render_template('predictions.html', data=data, message=message)
+        #return render_template('predictions.html', data=data)
 
 @app.route('/predictDiabetes', methods=['POST'])
 def predictDiabetes():
@@ -181,7 +194,8 @@ def predictDiabetes():
         testDF = trainTest[1]
 
         # Train a Decision Tree model
-        dtr = DecisionTreeRegressor().setFeaturesCol("features").setLabelCol("diabetes")
+        #dtr = DecisionTreeRegressor().setFeaturesCol("features").setLabelCol("diabetes")
+        dtr = DecisionTreeClassifier().setFeaturesCol("features").setLabelCol("diabetes")
         model = dtr.fit(trainingDF)
         
         # Save the trained model
@@ -191,8 +205,14 @@ def predictDiabetes():
         # Predict on test data
         fullPredictions = model.transform(testDF).cache()
         predictions = fullPredictions.select("prediction").rdd.map(lambda x: x[0])
+        predictions = predictions.map(float).map(round)
         labels = fullPredictions.select("diabetes").rdd.map(lambda x: x[0])
         predictionAndLabel = predictions.zip(labels).collect()
+
+        # Calculate accuracy
+        evaluator = MulticlassClassificationEvaluator(labelCol="diabetes", predictionCol="prediction", metricName="accuracy")
+        accuracy = evaluator.evaluate(fullPredictions)
+        accuracy= math.ceil(accuracy*100)
 
         # Write the predictions to a CSV file
         with open('predictionsDiabetes.csv', mode='w') as predictions_file:
@@ -216,7 +236,7 @@ def predictDiabetes():
         spark.stop()
 
         # Render the predictions in an HTML table
-        return render_template('predictions.html', data=data)
+        return render_template('predictions.html', data=data, accuracy=accuracy)
 
 @app.route('/predictPerUserHeart', methods=['POST'])
 def predictPerUserHeart():
@@ -268,11 +288,13 @@ def predictPerUserHeart():
         testDF = assembler.transform(input_df).select("heartdisease", "features")
 
         # Load the Decision Tree model
-        model = DecisionTreeRegressionModel.load("heart_model")
+        #model = DecisionTreeRegressionModel.load("heart_model")
+        model = DecisionTreeClassificationModel.load("heart_model")
 
         # Predict on test data
         fullPredictions = model.transform(testDF).cache()
         predictions = fullPredictions.select("prediction").rdd.map(lambda x: x[0])
+        predictions = predictions.map(float).map(round)
         labels = fullPredictions.select("heartdisease").rdd.map(lambda x: x[0])
         predictionAndLabel = predictions.zip(labels).collect()
 
@@ -289,9 +311,16 @@ def predictPerUserHeart():
 
         # Stop the SparkSession
         spark.stop()
+        
+        # Set message based on the rounded value of predictions
+        message = "person is not having heart disease"
+        val='0'
+        if predictions == 1:
+            message = "person is having heart disease"
+            val='1'
 
-        # Render the predictions in an HTML table
-        return render_template('predictions.html', data=data)
+        # Render the predictions and message in an HTML table
+        return render_template('message.html',message=message, val=val)
 
 
 @app.route('/predictHeart', methods=['POST'])
@@ -403,7 +432,8 @@ def predictHeart():
         testDF = trainTest[1]
 
         # Train a Decision Tree model
-        dtr = DecisionTreeRegressor().setFeaturesCol("features").setLabelCol("heartdisease")
+        #dtr = DecisionTreeRegressor().setFeaturesCol("features").setLabelCol("heartdisease")
+        dtr = DecisionTreeClassifier().setFeaturesCol("features").setLabelCol("heartdisease")
         model = dtr.fit(trainingDF)
 
         # Save the trained model
@@ -413,8 +443,14 @@ def predictHeart():
         # Predict on test data
         fullPredictions = model.transform(testDF).cache()
         predictions = fullPredictions.select("prediction").rdd.map(lambda x: x[0])
+        predictions = predictions.map(float).map(round)
         labels = fullPredictions.select("heartdisease").rdd.map(lambda x: x[0])
         predictionAndLabel = predictions.zip(labels).collect()
+
+        # Calculate accuracy
+        evaluator = MulticlassClassificationEvaluator(labelCol="heartdisease", predictionCol="prediction", metricName="accuracy")
+        accuracy = evaluator.evaluate(fullPredictions)
+        accuracy= math.ceil(accuracy*100)
 
         # Write the predictions to a CSV file
         with open('predictionsHeart.csv', mode='w') as predictions_file:
@@ -438,7 +474,7 @@ def predictHeart():
         spark.stop()
 
         # Render the predictions in an HTML table
-        return render_template('predictions.html', data=data)
+        return render_template('predictions.html', data=data, accuracy=accuracy)
 
         
         """

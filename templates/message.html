@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Predictions</title>
+    <link rel="stylesheet" type="text/css" href="/static/message.css">
+</head>
+<body>
+    <h1>Predictions</h1>
+    <p {% if val == '0' %}style="color:green;"{% else %}style="color:red;"{% endif %}>{{ message }}</p>
+</body>
+</html>
