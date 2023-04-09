@@ -110,11 +110,13 @@ def predictPerUserDiabetes():
         spark.stop()
         
         # Set message based on the rounded value of predictions
-        message = "person is not diabetic"
-        val='0'
-        if predictions == 1:
-            message = "person is diabetic"
-            val='1'
+        message = "person is diabetic"
+        val='1'
+        print("predictions=")
+        #print(predictions)
+        if predictions == 0:
+            message = "person is not diabetic"
+            val='0'
 
         # Render the predictions and message in an HTML table
         return render_template('message.html',message=message, val=val)
@@ -199,8 +201,8 @@ def predictDiabetes():
         model = dtr.fit(trainingDF)
         
         # Save the trained model
-        model.save("diabetes_model")
-        #write.overwrite().save("diabetes_model")
+        #model.save("diabetes_model")
+        model.write().overwrite().save("diabetes_model")
 
         # Predict on test data
         fullPredictions = model.transform(testDF).cache()
@@ -437,8 +439,8 @@ def predictHeart():
         model = dtr.fit(trainingDF)
 
         # Save the trained model
-        model.save("heart_model")
-        #write.overwrite().save("heart_model")
+        #model.save("heart_model")
+        model.write().overwrite().save("heart_model")
 
         # Predict on test data
         fullPredictions = model.transform(testDF).cache()
