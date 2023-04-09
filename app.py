@@ -93,6 +93,7 @@ def predictPerUserDiabetes():
         fullPredictions = model.transform(testDF).cache()
         predictions = fullPredictions.select("prediction").rdd.map(lambda x: x[0])
         predictions = predictions.map(float).map(round)#for rounding off values
+        predictionsList = predictions.map(float).map(round).collect()  # Collect the predictions as a list
         labels = fullPredictions.select("diabetes").rdd.map(lambda x: x[0])
         predictionAndLabel = predictions.zip(labels).collect()
 
@@ -112,9 +113,8 @@ def predictPerUserDiabetes():
         # Set message based on the rounded value of predictions
         message = "person is diabetic"
         val='1'
-        print("predictions=")
         #print(predictions)
-        if predictions == 0:
+        if predictionsList[0] == 0:
             message = "person is not diabetic"
             val='0'
 
@@ -297,6 +297,7 @@ def predictPerUserHeart():
         fullPredictions = model.transform(testDF).cache()
         predictions = fullPredictions.select("prediction").rdd.map(lambda x: x[0])
         predictions = predictions.map(float).map(round)
+        predictionsList = predictions.map(float).map(round).collect()  # Collect the predictions as a list
         labels = fullPredictions.select("heartdisease").rdd.map(lambda x: x[0])
         predictionAndLabel = predictions.zip(labels).collect()
 
@@ -317,7 +318,7 @@ def predictPerUserHeart():
         # Set message based on the rounded value of predictions
         message = "person is not having heart disease"
         val='0'
-        if predictions == 1:
+        if predictionsList[0] == 1:
             message = "person is having heart disease"
             val='1'
 
